@@ -7,6 +7,11 @@ venv/
 .venv/
 *.egg-info/
 
+# SQLite (DB local de demo)
+*.db
+*.sqlite
+*.sqlite3
+
 # Node
 node_modules/
 build/

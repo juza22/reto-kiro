@@ -23,13 +23,38 @@ Plataforma de microcréditos P2P (Peer-to-Peer Lending) que bancariza el modelo 
 
 ## Correr localmente
 
+### Opción 1 — Local (sin Docker, usa SQLite)
+
+Requisitos: **Python 3.11** y **Node.js LTS** instalados.
+
+En una terminal (backend):
+```powershell
+.\start-backend.ps1
+```
+
+En otra terminal (frontend):
+```powershell
+.\start-frontend.ps1
+```
+
+- API: http://localhost:8000 · Docs: http://localhost:8000/docs
+- Frontend: http://localhost:3000
+
+### Opción 2 — Docker (usa PostgreSQL)
+
 ```bash
 docker-compose up --build
 ```
 
-- API: http://localhost:8000
-- Docs API: http://localhost:8000/docs
-- Frontend: http://localhost:3000
+## Usuarios de demo (contraseña: `demo1234`)
+
+El script `seed.py` crea el escenario de ejemplo automáticamente:
+
+| Rol | Correo | Detalle |
+|-----|--------|---------|
+| Prestamista | julian@demo.com | Oferta: $1.000.000 al 3%/mes a 3 meses |
+| Prestatario | andres@demo.com | Debe $3.000/mes + capital |
+| Prestatario | laura@demo.com | Debe $27.000/mes + capital |
 
 ## Flujo de ejemplo
 

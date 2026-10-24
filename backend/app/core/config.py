@@ -4,7 +4,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     APP_NAME: str = "GotaAGota Bank"
     DEBUG: bool = True
-    DATABASE_URL: str = "postgresql://postgres:postgres@db:5432/gotagota"
+    # SQLite por defecto para desarrollo/demo local (sin instalar Postgres).
+    # En Docker/producción se sobreescribe con DATABASE_URL (Postgres).
+    DATABASE_URL: str = "sqlite:///./gotagota.db"
     SECRET_KEY: str = "super-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 horas
