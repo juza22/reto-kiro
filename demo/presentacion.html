@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GotaAGota Bank · Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --emerald: #059669; --emerald-dark: #047857; --emerald-light: #d1fae5;
+    --blue: #2563eb; --gray: #6b7280; --dark: #111827;
+  }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f172a; color: var(--dark); overflow: hidden;
+  }
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    padding: 5vh 8vw; background: #fff;
+    animation: fade .4s ease;
+  }
+  .slide.active { display: flex; }
+  @keyframes fade { from { opacity: 0; transform: translateY(10px);} to {opacity:1; transform:none;} }
+
+  /* Portada */
+  .cover { background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 60%, #022c22 100%); color:#fff; text-align:center; }
+  .cover .logo { font-size: 6rem; margin-bottom: 1rem; }
+  .cover h1 { font-size: 4rem; font-weight: 800; letter-spacing: -2px; }
+  .cover p { font-size: 1.6rem; opacity: .85; margin-top: 1rem; font-weight: 300; }
+  .cover .tag { margin-top: 2rem; background: rgba(255,255,255,.15); padding: .6rem 1.4rem; border-radius: 99px; font-size: 1rem; }
+
+  h2 { font-size: 2.8rem; font-weight: 800; color: var(--emerald-dark); margin-bottom: 2rem; letter-spacing:-1px; align-self:flex-start; }
+  h2 .accent { color: var(--dark); }
+
+  .full-width { width: 100%; }
+
+  /* Problema / solución cards */
+  .cols { display: flex; gap: 2rem; width: 100%; }
+  .card { flex: 1; background: #f9fafb; border-radius: 1.2rem; padding: 2rem; border: 1px solid #e5e7eb; }
+  .card.bad { border-left: 6px solid #ef4444; }
+  .card.good { border-left: 6px solid var(--emerald); }
+  .card h3 { font-size: 1.4rem; margin-bottom: 1rem; }
+  .card ul { list-style: none; }
+  .card li { padding: .5rem 0; font-size: 1.15rem; color: #374151; display:flex; gap:.6rem; align-items:flex-start; }
+
+  /* Flujo */
+  .flow { display: flex; align-items: center; justify-content: center; gap: 1rem; width: 100%; flex-wrap: wrap; }
+  .node { background: var(--emerald-light); border: 2px solid var(--emerald); border-radius: 1rem; padding: 1.2rem 1.5rem; text-align: center; min-width: 150px; }
+  .node .ico { font-size: 2rem; }
+  .node .t { font-weight: 700; color: var(--emerald-dark); margin-top:.4rem; }
+  .node .s { font-size: .85rem; color: var(--gray); margin-top:.2rem; }
+  .arrow { font-size: 2rem; color: var(--emerald); }
+
+  /* Ejemplo numérico */
+  .example { background: var(--emerald-light); border-radius: 1.5rem; padding: 2.5rem; width: 100%; }
+  .example .headline { font-size: 1.8rem; font-weight: 700; color: var(--emerald-dark); text-align:center; margin-bottom: 2rem; }
+  .split { display:flex; gap: 2rem; }
+  .borrower { flex:1; background:#fff; border-radius:1rem; padding:1.5rem; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,.06);}
+  .borrower .name { font-size:1.4rem; font-weight:700;}
+  .borrower .amt { font-size:2rem; font-weight:800; color:var(--emerald); margin:.5rem 0;}
+  .borrower .detail { color:var(--gray); font-size:1rem;}
+
+  /* Stack grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; width: 100%; }
+  .tech { background: #f9fafb; border-radius: 1rem; padding: 1.5rem; text-align: center; border:1px solid #e5e7eb; }
+  .tech .ico { font-size: 2.5rem; }
+  .tech .layer { font-size: .8rem; text-transform: uppercase; color: var(--gray); letter-spacing: 1px; margin-top:.6rem; }
+  .tech .name { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-top:.2rem; }
+
+  /* Screens */
+  .screens { display:grid; grid-template-columns: repeat(2,1fr); gap:1.5rem; width:100%; }
+  .screen { border-radius:1rem; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.12); border:1px solid #e5e7eb; }
+  .screen .bar { background:#f3f4f6; padding:.5rem .8rem; display:flex; gap:.4rem; }
+  .screen .bar span { width:.7rem; height:.7rem; border-radius:50%; }
+  .screen .bar .r{background:#ef4444}.screen .bar .y{background:#f59e0b}.screen .bar .g{background:#10b981}
+  .screen .body { padding:1.2rem; background:#fff; min-height:140px; }
+  .mini-label { text-align:center; margin-top:.6rem; font-weight:600; color:var(--gray); }
+
+  /* Kiro slide */
+  .kiro-slide { background: linear-gradient(135deg,#0f172a 0%, #1e293b 100%); color:#fff; }
+  .kiro-slide h2 { color:#fff; }
+  .kiro-slide h2 .accent { color: #34d399; }
+  .kiro-table { width:100%; border-collapse:collapse; font-size:1.15rem; }
+  .kiro-table th { text-align:left; padding:1rem; color:#34d399; border-bottom:2px solid #334155; font-size:1rem; text-transform:uppercase; letter-spacing:1px;}
+  .kiro-table td { padding:1rem; border-bottom:1px solid #1e293b; vertical-align:top;}
+  .kiro-table .feat { font-weight:700; color:#fff; white-space:nowrap;}
+  .kiro-table .desc { color:#cbd5e1; }
+  .badge { display:inline-block; background:#34d399; color:#064e3b; font-weight:700; border-radius:6px; padding:.1rem .5rem; font-size:.8rem;}
+
+  /* Closing */
+  .closing { background: linear-gradient(135deg, var(--emerald) 0%, #022c22 100%); color:#fff; text-align:center;}
+  .closing h1 { font-size:3.5rem; font-weight:800;}
+  .closing p { font-size:1.4rem; opacity:.9; margin-top:1rem;}
+  .closing .repo { margin-top:2rem; background:rgba(255,255,255,.12); padding:.8rem 1.6rem; border-radius:10px; font-family:monospace; font-size:1.1rem;}
+
+  /* Nav */
+  .nav { position: fixed; bottom: 2vh; right: 2vw; display: flex; gap: .6rem; z-index: 100; }
+  .nav button { background: var(--emerald); color:#fff; border:none; width:3rem; height:3rem; border-radius:50%; font-size:1.3rem; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,.2); transition:.2s;}
+  .nav button:hover { background: var(--emerald-dark); transform:scale(1.08);}
+  .counter { position: fixed; bottom: 2vh; left: 2vw; color:#94a3b8; font-size:1rem; z-index:100; background:rgba(0,0,0,.3); padding:.3rem .8rem; border-radius:8px;}
+  .hint { position:fixed; top:2vh; right:2vw; color:#94a3b8; font-size:.85rem; z-index:100;}
+  .slide:not(.cover):not(.kiro-slide):not(.closing) .counter-local { }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1. Portada -->
+  <section class="slide cover active">
+    <div class="logo">💧</div>
+    <h1>GotaAGota Bank</h1>
+    <p>Bancarizando el "gota a gota" con microcréditos P2P</p>
+    <div class="tag">Producto Mínimo Viable · Demo</div>
+  </section>
+
+  <!-- 2. Problema y solución -->
+  <section class="slide">
+    <h2>El problema <span class="accent">y nuestra solución</span></h2>
+    <div class="cols">
+      <div class="card bad">
+        <h3>😟 El "gota a gota" hoy</h3>
+        <ul>
+          <li>💸 Tasas de interés abusivas</li>
+          <li>🚫 Sin registro ni trazabilidad</li>
+          <li>⚠️ Informalidad y riesgo para todos</li>
+          <li>📵 Cero inclusión financiera</li>
+        </ul>
+      </div>
+      <div class="card good">
+        <h3>✅ GotaAGota Bank</h3>
+        <ul>
+          <li>📊 Tasas transparentes y acordadas</li>
+          <li>🧾 Todo queda registrado</li>
+          <li>👥 Cualquiera presta o solicita</li>
+          <li>💚 Inclusión financiera real</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Cómo funciona (flujo) -->
+  <section class="slide">
+    <h2>¿Cómo <span class="accent">funciona?</span></h2>
+    <div class="flow">
+      <div class="node"><div class="ico">📢</div><div class="t">1. Publicar</div><div class="s">Prestamista crea oferta</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="ico">🛒</div><div class="t">2. Explorar</div><div class="s">Se lista en el marketplace</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="ico">✋</div><div class="t">3. Solicitar</div><div class="s">Varios toman porciones</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="ico">✔️</div><div class="t">4. Aprobar</div><div class="s">Se generan las cuotas</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="ico">💳</div><div class="t">5. Pagar</div><div class="s">Nequi / PSE (simulado)</div></div>
+    </div>
+  </section>
+
+  <!-- 4. Ejemplo numérico -->
+  <section class="slide">
+    <h2>Ejemplo <span class="accent">real</span></h2>
+    <div class="example">
+      <div class="headline">Julián presta 💵 $1.000.000 · 3% mensual · 3 meses</div>
+      <div class="split">
+        <div class="borrower">
+          <div class="name">👨 Andrés</div>
+          <div class="amt">$100.000</div>
+          <div class="detail">Paga <b>$3.000/mes</b><br>+ capital en la última cuota</div>
+        </div>
+        <div class="borrower">
+          <div class="name">👩 Laura</div>
+          <div class="amt">$900.000</div>
+          <div class="detail">Paga <b>$27.000/mes</b><br>+ capital en la última cuota</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:1.5rem;font-size:1.2rem;color:var(--emerald-dark);font-weight:700;">
+        Julián recupera $1.090.000 → +$90.000 de rendimiento ✅
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Stack tecnológico -->
+  <section class="slide">
+    <h2>Stack <span class="accent">tecnológico</span></h2>
+    <div class="grid">
+      <div class="tech"><div class="ico">🐍</div><div class="layer">Backend</div><div class="name">Python + FastAPI</div></div>
+      <div class="tech"><div class="ico">🗄️</div><div class="layer">Base de datos</div><div class="name">SQLAlchemy · SQLite/Postgres</div></div>
+      <div class="tech"><div class="ico">⚛️</div><div class="layer">Frontend</div><div class="name">React + Tailwind</div></div>
+      <div class="tech"><div class="ico">🔐</div><div class="layer">Seguridad</div><div class="name">JWT + bcrypt</div></div>
+      <div class="tech"><div class="ico">💳</div><div class="layer">Pagos</div><div class="name">Nequi / PSE (mock)</div></div>
+      <div class="tech"><div class="ico">🐳</div><div class="layer">Infra</div><div class="name">Docker Compose</div></div>
+    </div>
+  </section>
+
+  <!-- 6. Capturas de la app -->
+  <section class="slide">
+    <h2>La <span class="accent">aplicación</span></h2>
+    <div class="screens">
+      <div>
+        <div class="screen">
+          <div class="bar"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="body" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);display:flex;flex-direction:column;justify-content:center;align-items:center;">
+            <div style="font-size:2rem;">💧</div>
+            <div style="font-weight:700;color:#047857;">Iniciar sesión</div>
+            <div style="margin-top:.6rem;width:70%;height:10px;background:#fff;border-radius:4px;"></div>
+            <div style="margin-top:.4rem;width:70%;height:10px;background:#fff;border-radius:4px;"></div>
+            <div style="margin-top:.6rem;width:70%;height:22px;background:#059669;border-radius:6px;"></div>
+          </div>
+        </div>
+        <div class="mini-label">Login / Registro</div>
+      </div>
+      <div>
+        <div class="screen">
+          <div class="bar"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+              <div style="background:#ecfdf5;border-left:4px solid #059669;padding:.5rem;border-radius:6px;"><div style="font-size:.7rem;color:#6b7280;">Total prestado</div><div style="font-weight:800;color:#047857;">$1.000.000</div></div>
+              <div style="background:#eff6ff;border-left:4px solid #2563eb;padding:.5rem;border-radius:6px;"><div style="font-size:.7rem;color:#6b7280;">Préstamos activos</div><div style="font-weight:800;color:#1d4ed8;">2</div></div>
+              <div style="background:#ecfdf5;border-left:4px solid #059669;padding:.5rem;border-radius:6px;"><div style="font-size:.7rem;color:#6b7280;">Por cobrar</div><div style="font-weight:800;color:#047857;">$1.090.000</div></div>
+              <div style="background:#eff6ff;border-left:4px solid #2563eb;padding:.5rem;border-radius:6px;"><div style="font-size:.7rem;color:#6b7280;">Cuotas pend.</div><div style="font-weight:800;color:#1d4ed8;">6</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-label">Dashboard</div>
+      </div>
+      <div>
+        <div class="screen">
+          <div class="bar"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="body">
+            <div style="border:1px solid #e5e7eb;border-radius:8px;padding:.6rem;margin-bottom:.4rem;">
+              <div style="font-weight:800;color:#047857;">$1.000.000 <span style="font-size:.7rem;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:99px;">partial</span></div>
+              <div style="font-size:.75rem;color:#6b7280;">3% mensual · 3 meses · por Julián</div>
+              <div style="margin-top:.4rem;height:20px;background:#059669;border-radius:6px;text-align:center;color:#fff;font-size:.7rem;line-height:20px;">Solicitar préstamo</div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-label">Marketplace de ofertas</div>
+      </div>
+      <div>
+        <div class="screen">
+          <div class="bar"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="body">
+            <div style="font-weight:700;margin-bottom:.4rem;">Cuotas · Préstamo #1</div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:.3rem 0;font-size:.85rem;"><span>Cuota 1 — $3.000</span><span style="background:#d1fae5;color:#047857;padding:0 6px;border-radius:99px;">✓ pagado</span></div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:.3rem 0;font-size:.85rem;"><span>Cuota 2 — $3.000</span><span style="background:#059669;color:#fff;padding:0 6px;border-radius:6px;">Pagar</span></div>
+            <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.85rem;"><span>Cuota 3 — $103.000</span><span style="background:#059669;color:#fff;padding:0 6px;border-radius:6px;">Pagar</span></div>
+          </div>
+        </div>
+        <div class="mini-label">Pago de cuotas (Nequi/PSE)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Qué se usó de KIRO -->
+  <section class="slide kiro-slide">
+    <h2>¿Qué usamos de <span class="accent">Kiro?</span></h2>
+    <table class="kiro-table">
+      <thead><tr><th>Feature de Kiro</th><th>Cómo se usó</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="feat">⚡ Powers <span class="badge">kaddo-power</span></td>
+          <td class="desc">Se activó el power para acceder a sus skills de planificación de implementación.</td>
+        </tr>
+        <tr>
+          <td class="feat">🧩 Skills</td>
+          <td class="desc"><b>implementation-planning</b>: guió el enfoque técnico y los pasos antes de escribir código.</td>
+        </tr>
+        <tr>
+          <td class="feat">🧭 Steering</td>
+          <td class="desc"><b>.kiro/steering/project.md</b>: reglas de negocio, stack y convenciones presentes en toda la sesión.</td>
+        </tr>
+        <tr>
+          <td class="feat">🤖 Agente Kiro CLI</td>
+          <td class="desc">Generó backend, frontend, Docker y resolvió incompatibilidades (Python 3.13, bcrypt) de forma autónoma.</td>
+        </tr>
+        <tr>
+          <td class="feat">🔧 Git integrado</td>
+          <td class="desc">Inicializó el repo, hizo commits descriptivos y publicó todo en GitHub automáticamente.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 8. Cierre -->
+  <section class="slide closing">
+    <h1>Gracias 💚</h1>
+    <p>GotaAGota Bank · MVP construido con Kiro</p>
+    <div class="repo">github.com/juza22/reto-kiro</div>
+  </section>
+
+</div>
+
+<div class="counter"><span id="cur">1</span> / <span id="tot">8</span></div>
+<div class="hint">← → para navegar · F11 pantalla completa</div>
+<div class="nav">
+  <button onclick="prev()">‹</button>
+  <button onclick="next()">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let i = 0;
+  document.getElementById('tot').textContent = slides.length;
+  function show(n){
+    slides[i].classList.remove('active');
+    i = (n + slides.length) % slides.length;
+    slides[i].classList.add('active');
+    document.getElementById('cur').textContent = i+1;
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+  document.addEventListener('keydown', e => {
+    if(e.key==='ArrowRight'||e.key===' ') next();
+    if(e.key==='ArrowLeft') prev();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Dependencias adicionales para correr con PostgreSQL (Docker/producción).
+# Instala primero requirements.txt y luego este archivo.
+-r requirements.txt
+psycopg2-binary==2.9.9
